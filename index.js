@@ -49,7 +49,7 @@ function getWeatherDetails(name, lat, lon, country, state){
         aqiCard.innerHTML =`
         <div class="card-head">
             <p>air quality index</p>
-            <p class="air-index aqi-${data.list[0].main.aqi}">${data.list[0].main.aqi - 1}</p>
+            <p class="air-index aqi-${data.list[0].main.aqi}">${aqilist[data.list[0].main.aqi - 1]}</p>
         </div>
         <div class="air-indices">
             <i class="fa-solid fa-wind"></i>
@@ -109,35 +109,10 @@ function getWeatherDetails(name, lat, lon, country, state){
                     </div>
                 </div>
         `;
-        let {sunrise, sunset} = data.sys,
-        {timezone, visibility } = data,
+        // let {sunrise, sunset} = data.sys,
+        let {timezone, visibility } = data,
         {humidity, pressure, feels_like} = data.main,
-        {speed} = data.wind,
-        sRisetime = moment.utc(sunrise, 'x').add(timezone, 'seconds').format('hh:mm A'),
-        sSetTime = moment.utc(sunset, 'x').add(timezone, 'seconds').format('hh:mm A');
-        sunriseCard.innerHTML = `
-        <div class="card-head">
-                <p>sunrise & sunset</p>
-            </div>
-            <div class="sunrise-sunset">
-                <div class="item">
-                <div class="icon"><i class="fa-thin fa-sunrise fa-4x"></i></div>
-                </div>
-                <div>
-                    <p>sunrise</p>
-                    <h2>${sRisetime}</h2>
-                </div>    
-            <div>
-                    <div class="item">
-                        <div class="icon"><i class="fa-thin fa-sunrise fa-4x"></i></div>
-                    </div>
-                    <div>
-                    <p>sunset</p>
-                    <h2>${sSetTime}</h2>
-                    </div>
-            </div>
-        </div>
-        `;
+        {speed} = data.wind;
         humidityVal.innerHTML = `${humidity}%`;
         pressureVal.innerHTML = `${pressure}hpa`;
         visibilityVal.innerHTML = `${visibility/1000}km`;
@@ -147,101 +122,48 @@ function getWeatherDetails(name, lat, lon, country, state){
         alert('failed to fetch current weather');
     });
 
-    // fetch(FORECASTAPI_URL).then(res => res.json()).then(data => {
-    //     console.log(data);
-    //     let hourlyForecast = data.list;
-    //     hourlyforcastcard.innerHTML = '';
-    //     for(let i=0;i <= 7;i++){
-    //         let hrForecastDate = new date(hourlyForecast[i].dt_txt);
-    //         let hr = hrForecastDate.getHours();
-    //         let a = 'pm';
-    //         if(hr < 12) a ='am';
-    //         if(hr == 0)hr =12;
-    //         if(hr > 12) hr = hr -12;
-    //         hourlyforcastcard.innerHTML += `
-    //             <div class="card">
-    //                 <p>${hr} ${a}</p>
-    //                 <img src="https://openweathermap.org/img/wn/${hourlyForecast[i].weather[0].icon}.png" width="24" alt="">
-    //                 <p>${(hourlyForecast[i].man.temp -273.1).toFixed(2)}&deg;c</p>
-    //             </div>
-    //         `;
-    //     }
-    //     let uniqueForecastDays = [];
-    //     let fiveDaysForecast = data.list.filter(forecast => {
-    //         let forecastDate = new Date(forecast.dt_txt).getDate();
-    //         if(!uniqueForecastDays.includes(forecastDate)){
-    //             return uniqueForecastDays.push(forecastDate);
-    //         }
-    //     });
-    //     fiveDaysForecastCard.innerHTML = '';
-    //     for(let i=1;i<fiveDaysForecast.length; i++){
-    //         let date = new Date(fiveDaysForecast[i].dt_txt);
-    //         fiveDaysForecastCard.innerHTML += `
-    //             <div class="forecast-item">
-    //                 <div class="icon-wrapper">
-    //                     <img src="https://openweathermap.org/img/wn/${fiveDaysForecast[i].weather[0].icon}.png"  alt="">
-    //                     <span>${(fiveDaysForecast[i].main.temp - 273.15).toFixed(2)}&deg;c</span>
-    //                 </div>
-    //                 <p>${date.getDate()} ${months[date.getMonth()]}</p>
-    //                 <p>${days[date.getDay()]}</p>
-    //             </div>
-    //         `;
-    //     }
-    //     console.log(fiveDaysForecast);
-    // }).catch(() => {
-    //     alert('failed to fetch forecast')
-    // });
-
-    let i;
-let hrForecastDate;
-
-fetch(FORECASTAPI_URL)
-  .then((res) => res.json())
-  .then((data) => {
-    console.log(data);
+    fetch(FORECASTAPI_URL).then((res) => res.json()).then(data => {
     let hourlyForecast = data.list;
-    for (i = 0; i < 8; i++) {
-      hrForecastDate = new Date(hourlyForecast[i].dt_txt);
-      let hr = hrForecastDate.getHours();
-      let a = "pm";
-      if (hr < 12) a = "am";
-      if (hr === 0) hr = 12;
-      if (hr > 12) hr = hr - 12;
-      hourlyforcastcard.innerHTML += `
-                <div class="card">
-                    <p>${hr} ${a}</p>
-                    <img src="https://openweathermap.org/img/wn/${hourlyForecast[i].weather[0].icon}.png" width="24" alt="">
-                    <p>${(hourlyForecast[i].main.temp - 273.15).toFixed(2)}&deg;c</p>
-                </div>
-            `;
+    hourlyforcastcard.innerHTML = '';
+    for(i=0; i <= 7; i++){
+        let hrForecastDate = new Date(hourlyForecast[i].dt_txt);
+        let hr = hrForecastDate.getHours();
+        let a = 'pm';
+        if(hr < 12) a = 'am';
+        if(hr == 0) hr = 12;
+        if(hr > 12) hr = hr - 12;
+        hourlyforcastcard.innerHTML += `
+            <div class="card">
+                <p>${hr}${a}</p>
+                <img src="https://openweathermap.org/img/wn/${hourlyForecast[i].weather[0].icon}.png" alt="">
+                <p>${(hourlyForecast[i].main.temp - 273.15).toFixed(2)}&deg;c</p>
+            </div>
+        `;
     }
-
     let uniqueForecastDays = [];
-    let fiveDaysForecast = data.list.filter((forecast) => {
-      let forecastDate = new Date(forecast.dt_txt).getDate();
-      if (!uniqueForecastDays.includes(forecastDate)) {
-        uniqueForecastDays.push(forecastDate);
-        return true;
-      }
-      return false;
+    let fiveDayForecast = data.list.filter(forecast => {
+        let forecastDate = new Date(forecast.dt_txt).getDate();
+        if(!uniqueForecastDays.includes(forecastDate)){
+            return uniqueForecastDays.push(forecastDate);
+        }
     });
-
-    fiveDaysForecastCard.innerHTML = "";
-    for (i = 0; i < fiveDaysForecast.length; i++) {
-      let date = new Date(fiveDaysForecast[i].dt_txt);
-      fiveDaysForecastCard.innerHTML += `<div class="forecast-item">
-                    <div class="icon-wrapper">
-                        <img src="https://openweathermap.org/img/wn/${fiveDaysForecast[i].weather[0].icon}.png"  alt="">
-                        <span>${(fiveDaysForecast[i].main.temp - 273.15).toFixed(2)}&deg;c</span>
-                    </div>
-                    <p>${date.getDate()} ${months[date.getMonth()]}</p>
-                    <p>${days[date.getDay()]}</p>
+    fiveDaysForecastCard.innerHTML = '';
+    for(i=1;i< fiveDayForecast.length; i++){
+        let date = new Date(fiveDayForecast[i].dt_txt);
+        fiveDaysForecastCard.innerHTML += `
+            <div class="forecast-item">
+                <div class="icon-wrapper">
+                    <img src="https://openweathermap.org/img/wn/${fiveDayForecast[i].weather[0].icon}.png"   alt="">
+                    <span>${(fiveDayForecast[i].main.temp - 273.15).toFixed(2)}&deg;c</span>
                 </div>
-            `;
+                <p>${date.getDate()} ${months[date.getMonth()]}</p>
+                <p>${days[date.getDay()]}</p>
+            </div>
+        `;
     }
-    console.log(fiveDaysForecast);
-  })
-
+   }).catch(()=>{
+        alert('failed to fetch weather forecast');
+    });
 }
 
 function getcitycoordinates(){
